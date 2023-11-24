@@ -1,0 +1,5 @@
+113 Nutrisari 1500 12
+111 korek 1200 21
+114 Marlboro_Merah 40000 12
+112 Djarum_Coklat_Extra 15000 12
+119 Pulpen 2000 3
