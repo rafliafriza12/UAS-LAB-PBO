@@ -5,35 +5,58 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
-
+/**
+ * Kelas ListBarang merepresentasikan daftar barang yang dapat dikelola, termasuk
+ * metode untuk memuat barang dari file, menampilkan, menambah, menghapus, dan mengedit barang.
+ * Kelas ini juga menyimpan perubahan ke dalam file setelah operasi-edit dilakukan.
+ *
+ * <p>Daftar barang disimpan dalam bentuk ArrayList dari objek Barang.
+ * Barang adalah kelas yang memiliki atribut IdBarang, NamaBarang, HargaBarang, dan Stok.
+ *
+ * @author Rafli Afriza Nugraha
+ * @version 1.0
+ */
 public class ListBarang {
     private ArrayList<Barang> barang;
     
+    /**
+     * Konstruktor untuk membuat objek ListBarang dengan inisialisasi ArrayList barang.
+     */
     public ListBarang(){
         barang = new ArrayList<Barang>();
     }
 
-    private void loadBarangFromFile() {
+    /**
+     * Mendapatkan daftar barang.
+     *
+     * @return ArrayList dari objek Barang.
+     */
+    public ArrayList<Barang> getBarang() {
+        return barang;
+    }
+
+    /**
+     * Memuat daftar barang dari file ke dalam ArrayList barang.
+     * File yang dibaca berlokasi di "assets/barang/barang.txt".
+     */
+    public void loadBarangFromFile() {
         String pathFile = "assets/barang/barang.txt";
         BufferedReader fileBarang = null;
         try {
             fileBarang = new BufferedReader(new FileReader(pathFile));
             String bacaBaris;
-            boolean loop = true;
-            while(loop){
+            // boolean loop = true;
                 while ((bacaBaris = fileBarang.readLine()) != null) {
                     String[] detailBarang = bacaBaris.split(" ");
                     Barang objBarang = new Barang();
 
                     objBarang.setIdBarang(Integer.parseInt(detailBarang[0]));
                     objBarang.setNamaBarang(detailBarang[1]);
-                    objBarang.setHargaBarang(detailBarang[2]);
-                    objBarang.setStok(detailBarang[3]);
+                    objBarang.setHargaBarang(Integer.parseInt(detailBarang[2]));
+                    objBarang.setStok(Integer.parseInt(detailBarang[3]));
 
                     barang.add(objBarang);
                 }
-                loop=false;
-            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -47,11 +70,15 @@ public class ListBarang {
         }
     }
 
+    /**
+     * Menampilkan daftar barang ke konsol.
+     * Daftar barang diurutkan berdasarkan IdBarang.
+     */
     public void tampilkanBarang(){
         this.loadBarangFromFile();
 
         this.sorting();
-
+        System.out.println("--------------List Barang--------------\n");
         this.barang.forEach((i) -> {
             System.out.println("Id Barang\t: "+i.getIdBarang());
             System.out.println("Nama Barang\t: "+i.getNamaBarang());
@@ -63,7 +90,13 @@ public class ListBarang {
         this.barang.clear();
     }
 
-    protected void tambahBarang(){
+    /**
+     * Menambahkan barang baru ke dalam daftar barang.
+     * Pengguna diminta untuk memasukkan Id, Nama, Harga, dan Stok barang.
+     * Setelah penambahan, daftar barang diurutkan berdasarkan IdBarang.
+     */
+    public void tambahBarang(){
+        ClearConsole clear = new ClearConsole();
         this.loadBarangFromFile();
 
         Barang tambahBarang = new Barang();
@@ -71,8 +104,7 @@ public class ListBarang {
 
         System.out.println("Tambah Barang");
         System.out.print("Id barang\t: ");
-        int idBarang = scan.nextInt();
-        scan.nextLine();
+        String idBarang = scan.nextLine();
         System.out.print("Nama Barang\t: ");
         String namaBarang = scan.nextLine();
         System.out.print("Harga Barang\t: ");
@@ -81,21 +113,29 @@ public class ListBarang {
         String stokBarang = scan.nextLine();
         System.out.println("\n");
 
-        tambahBarang.setIdBarang(idBarang);
+        tambahBarang.setIdBarang(Integer.parseInt(idBarang));
         tambahBarang.setNamaBarang(namaBarang);
-        tambahBarang.setHargaBarang(hargaBarang);
-        tambahBarang.setStok(stokBarang);
+        tambahBarang.setHargaBarang(Integer.parseInt(hargaBarang));
+        tambahBarang.setStok(Integer.parseInt(stokBarang));
 
 
         this.barang.add(tambahBarang);
 
+        this.sorting();
+
         writeToFile();
 
         this.barang.clear();
-
+        clear.clear();
+        System.out.println(tambahBarang.getNamaBarang()+" Berhasil ditambahkan");
     }
 
-    protected void hapusBarang(){
+    /**
+     * Menghapus barang dari daftar berdasarkan IdBarang yang dimasukkan pengguna.
+     * Setelah penghapusan, daftar barang diurutkan berdasarkan IdBarang.
+     */
+    public void hapusBarang(){
+        ClearConsole clear = new ClearConsole();
         this.loadBarangFromFile();
 
         Scanner scan = new Scanner(System.in);
@@ -108,22 +148,31 @@ public class ListBarang {
             if(hapus == this.barang.get(i).getIdBarang()){
                 index = i;
                 this.barang.remove(index);
+                clear.clear();
+                System.out.println("Barang Berhasil Dihapus");
                 break;
             }
             else if((i==this.barang.size()-1)&& index==0){
+                clear.clear();
                 System.out.println("Barang Tidak Ditemukan");
                 break;
             }
         }
 
-        writeToFile();
+        this.sorting();
+
+        this.writeToFile();
 
         this.barang.clear();
     }
 
-    protected void editBarang(){
+    /**
+     * Mengedit atribut-atribut barang dalam daftar berdasarkan IdBarang yang dimasukkan pengguna.
+     * Setelah pengeditan, daftar barang diurutkan berdasarkan IdBarang.
+     */
+    public void editBarang(){
         this.loadBarangFromFile();
-
+        ClearConsole clear = new ClearConsole();
         Scanner scan = new Scanner(System.in);
         int index = 0;
         Barang editBarang = new Barang();
@@ -138,7 +187,7 @@ public class ListBarang {
                 index = i;
                 System.out.print("Masukkan nama barang baru : ");
                 String namaBarangBaru = scan.nextLine();
-        
+                
                 System.out.print("Masukkan harga baru : ");
                 String hargaBaru = scan.nextLine();
         
@@ -147,25 +196,32 @@ public class ListBarang {
         
                 editBarang.setIdBarang(edit);
                 editBarang.setNamaBarang(namaBarangBaru);
-                editBarang.setHargaBarang(hargaBaru);
-                editBarang.setStok(stokBaru);
-        
+                editBarang.setHargaBarang(Integer.parseInt(hargaBaru));
+                editBarang.setStok(Integer.parseInt(stokBaru));
                 this.barang.set(index, editBarang);
+                clear.clear();
+                System.out.println("Barang berhasil di Edit");
                 break;
             }
             else if((i==this.barang.size()-1)&& index==0){
+                clear.clear();
                 System.out.println("Barang Tidak Ditemukan");
                 break;
             }
         }   
 
+        this.sorting();
 
-        writeToFile();
+        this.writeToFile();
 
         this.barang.clear();
     }
 
-    private void writeToFile(){
+    /**
+     * Menyimpan perubahan daftar barang ke dalam file "assets/barang/barang.txt".
+     * Setelah penulisan, daftar barang diurutkan berdasarkan IdBarang.
+     */
+    public void writeToFile(){
         String pathFileBarang = "assets/barang/barang.txt";
         BufferedWriter fileBarang = null;
 
@@ -176,7 +232,7 @@ public class ListBarang {
                 fileBarang.write(i.getIdBarang()+" ");
                 fileBarang.write(i.getNamaBarang()+" ");
                 fileBarang.write(i.getHargaBarang()+" ");
-                fileBarang.write(i.getStok());
+                fileBarang.write(String.valueOf(i.getStok()));
                 fileBarang.newLine();
             }
     
@@ -193,6 +249,9 @@ public class ListBarang {
         }   
     }
 
+    /**
+     * Melakukan pengurutan daftar barang berdasarkan IdBarang menggunakan algoritma Bubble Sort.
+     */
     private void sorting(){
         for(int i = 0; i < this.barang.size(); i++){
             for(int j = 0; j < this.barang.size()-i-1;j++){
