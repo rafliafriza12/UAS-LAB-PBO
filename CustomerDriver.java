@@ -99,11 +99,11 @@ public class CustomerDriver extends Driver {
                     this.akun.tampilInvoice(this.akun.getId());
                     break;
                 case 8:
-                    System.exit(0);
+                    clear.clear();
                     break;
                 default:
                     break;
             }
-        } while (pilihMenu > 0 && pilihMenu < 9);
+        } while (pilihMenu > 0 && pilihMenu < 8);
     }
 }

@@ -77,7 +77,7 @@ public class AdminDriver extends Driver{
                     this.lihatTransaksi();
                     break;
                 case 6:
-                    System.exit(1);
+                    clear.clear();
                     break;
                 
                 default:
